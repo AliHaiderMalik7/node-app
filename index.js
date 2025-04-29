@@ -1,6 +1,9 @@
 const express = require("express");
 const app = express();
 const PORT = 3000;
+
+const pool = require("./config/db");
+
 app.use(express.json());
 
 app.get("/", (req, res) => res.send("Hello Backend!"));
