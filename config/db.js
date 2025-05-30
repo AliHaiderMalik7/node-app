@@ -19,8 +19,12 @@ const initDB = async () => {
             password VARCHAR(255) NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`;
-    await pool.query(createTableQuery); // Run the query to create the table
-    console.log('✅ Table "users" is ready');
+        const alterTableQuery = `ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'user'`;
+
+        await pool.query(createTableQuery);
+        await pool.query(alterTableQuery);
+
+        console.log('✅ Table "users" is ready and "role" column is present');
   } catch (err) {
     console.error("❌ Error creating table:", err);
   }
