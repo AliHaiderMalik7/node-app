@@ -21,6 +21,8 @@ const getUserByID = async (id) => {
   return result.rows[0]
 }
 
+
+
 const deleteUserByID = async (id) => {
   const result = await pool.query(`DELETE FROM USERS WHERE ID = $1 RETURNING *`, [id]);
   return result.rows[0];

@@ -17,6 +17,11 @@ const addUser = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
+    const existingUser = await getUserByEmail(email);
+    if(existingUser){
+      return res.status(409).json({message : "User with this email already exists"})
+    }
+
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
     console.log("hashed password", hashedPassword);
     console.log("role",role);
@@ -40,11 +45,17 @@ const addUser = async (req, res) => {
 };
 
 const getUsers = async (req, res) => {
+  console.log("in get usres");
+  
   try {
     const users = await getAllUsers();
+    console.log("users are", users);
+    
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({ error: "Internal Server Error!" });
+    console.log("error",error);
+    
+    res.status(500).json({ error: "Internal Server Errorrrrr!" });
   }
 };
 
@@ -61,6 +72,7 @@ const getUserByIDController = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error!" });
   }
 };
+
 
 const deleteUser = async (req, res) => {
   const { id } = req.params;
