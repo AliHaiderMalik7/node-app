@@ -11,17 +11,17 @@ const createUser = async ({ name, email, password,role='user'}) => {
   return result.rows[0];
 };
 
-const getAllUsers = async (limit, offset, search) => {
+const getAllUsers = async (limit, offset, search="",role="") => {
   limit = parseInt(limit); 
   offset = parseInt(offset); 
 
   const result = await pool.query(
     `SELECT id, name, email, role
      FROM users
-     WHERE name ILIKE $1 OR email ILIKE $1
+     WHERE (name ILIKE $1 OR email ILIKE $1) AND role ILIKE $2
      ORDER BY id ASC
-     LIMIT $2 OFFSET $3`,
-    [`%${search}%`, limit, offset]
+     LIMIT $3 OFFSET $4`,
+    [`%${search}%`, `%${role}%`, limit, offset]
   );
   return result.rows;
 };
@@ -32,10 +32,16 @@ const getUserByID = async (id) => {
   return result.rows[0]
 }
 
-const getUsersCount = async(search) => {
-  const result = await pool.query(`SELECT COUNT(*) FROM users WHERE name ILIKE $1 OR email ILIKE $1`,[`%${search}%`]);
+const getUsersCount = async (search = "", role = "") => {
+  const result = await pool.query(
+    `SELECT COUNT(*) FROM users 
+     WHERE (name ILIKE $1 OR email ILIKE $1)
+       AND role ILIKE $2`,
+    [`%${search}%`, `%${role}%`]
+  );
   return result.rows[0].count;
-}
+};
+
 
 
 

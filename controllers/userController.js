@@ -51,10 +51,11 @@ const getUsers = async (req, res) => {
   const search = req.query.search || "";
   const limit = parseInt(req.query.limit) || 5;
   const offset = (page - 1) * limit; 
+  const roleFilter = req.query.role || "";
 
   try {
-    const users = await getAllUsers(limit, offset, search);
-    const totalUsers = await getUsersCount(search);
+    const users = await getAllUsers(limit, offset, search,roleFilter);
+    const totalUsers = await getUsersCount(search,roleFilter);
     const totalPages = Math.ceil(totalUsers / limit);
     console.log("count received", totalUsers);
 
