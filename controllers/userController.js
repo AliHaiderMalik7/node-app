@@ -4,6 +4,7 @@ const {
   getUserByID,
   deleteUserByID,
   getUserByEmail,
+  getUsersCount,
 } = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -46,15 +47,30 @@ const addUser = async (req, res) => {
 
 const getUsers = async (req, res) => {
   console.log("in get usres");
-  
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 5;
+  const offset = (page - 1) * limit; // ✅ correct offset
+
+  console.log("page and limit is ", page, limit);
   try {
-    const users = await getAllUsers();
+    const users = await getAllUsers(limit, offset);
+    const totalUsers = await getUsersCount();
+    const totalPages = Math.ceil(totalUsers / limit);
+    console.log("count received", totalUsers);
+
     console.log("users are", users);
-    
-    res.status(200).json(users);
+
+    res
+      .status(200)
+      .json({
+        currentPage: page,
+        pages: totalPages,
+        count: parseInt(totalUsers),
+        data: users,
+      });
   } catch (error) {
-    console.log("error",error);
-    
+    console.log("error", error);
+
     res.status(500).json({ error: "Internal Server Errorrrrr!" });
   }
 };

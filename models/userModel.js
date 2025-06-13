@@ -11,14 +11,25 @@ const createUser = async ({ name, email, password,role='user'}) => {
   return result.rows[0];
 };
 
-const getAllUsers = async () => {
-    const result = await pool.query(`SELECT * FROM USERS ORDER BY id ASC`)
+const getAllUsers = async (limit,offset) => 
+  {
+    console.log("page and limit received are", limit, offset);
+
+    const result = await pool.query(
+      `SELECT id, name, email, role FROM users ORDER BY id ASC LIMIT $1 OFFSET $2`,
+      [limit, offset]
+    );
     return result.rows
 }
 
 const getUserByID = async (id) => {
   const result = await pool.query(`SELECT * FROM USERS WHERE ID = $1`,[id])
   return result.rows[0]
+}
+
+const getUsersCount = async(id) => {
+  const result = await pool.query(`SELECT COUNT(*) FROM users`);
+  return result.rows[0].count;
 }
 
 
@@ -45,4 +56,5 @@ module.exports = {
   getUserByID,
   deleteUserByID,
   getUserByEmail,
+  getUsersCount,
 };
