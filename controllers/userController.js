@@ -48,13 +48,13 @@ const addUser = async (req, res) => {
 const getUsers = async (req, res) => {
   console.log("in get usres");
   const page = parseInt(req.query.page) || 1;
+  const search = req.query.search || "";
   const limit = parseInt(req.query.limit) || 5;
-  const offset = (page - 1) * limit; // ✅ correct offset
+  const offset = (page - 1) * limit; 
 
-  console.log("page and limit is ", page, limit);
   try {
-    const users = await getAllUsers(limit, offset);
-    const totalUsers = await getUsersCount();
+    const users = await getAllUsers(limit, offset, search);
+    const totalUsers = await getUsersCount(search);
     const totalPages = Math.ceil(totalUsers / limit);
     console.log("count received", totalUsers);
 
