@@ -20,9 +20,11 @@ const initDB = async () => {
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`;
         const alterTableQuery = `ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'user'`;
+        const alterImageQuery = `ALTER TABLE users ADD COLUMN IF NOT EXISTS image VARCHAR(255)`
 
         await pool.query(createTableQuery);
         await pool.query(alterTableQuery);
+        await pool.query(alterImageQuery)
 
         console.log('✅ Table "users" is ready and "role" column is present');
   } catch (err) {

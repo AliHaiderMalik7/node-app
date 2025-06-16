@@ -14,26 +14,29 @@ const SALT_ROUNDS = 10; // You can increase this for more security
 const addUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
+    const image = req.file.filename || null;
     if (!name || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
     const existingUser = await getUserByEmail(email);
-    if(existingUser){
-      return res.status(409).json({message : "User with this email already exists"})
+    if (existingUser) {
+      return res
+        .status(409)
+        .json({ message: "User with this email already exists" });
     }
 
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
     console.log("hashed password", hashedPassword);
-    console.log("role",role);
-    
+    console.log("role", role);
 
     // If role is undefined, it won't be inserted — DB will apply default 'user'
     const user = await createUser({
       name,
       email,
       password: hashedPassword,
-      role, 
+      role,
+      image,
     });
     res.status(201).json({
       message: "User created successfully",
@@ -50,25 +53,23 @@ const getUsers = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const search = req.query.search || "";
   const limit = parseInt(req.query.limit) || 5;
-  const offset = (page - 1) * limit; 
+  const offset = (page - 1) * limit;
   const roleFilter = req.query.role || "";
 
   try {
-    const users = await getAllUsers(limit, offset, search,roleFilter);
-    const totalUsers = await getUsersCount(search,roleFilter);
+    const users = await getAllUsers(limit, offset, search, roleFilter);
+    const totalUsers = await getUsersCount(search, roleFilter);
     const totalPages = Math.ceil(totalUsers / limit);
     console.log("count received", totalUsers);
 
     console.log("users are", users);
 
-    res
-      .status(200)
-      .json({
-        currentPage: page,
-        pages: totalPages,
-        count: parseInt(totalUsers),
-        data: users,
-      });
+    res.status(200).json({
+      currentPage: page,
+      pages: totalPages,
+      count: parseInt(totalUsers),
+      data: users,
+    });
   } catch (error) {
     console.log("error", error);
 
@@ -89,7 +90,6 @@ const getUserByIDController = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error!" });
   }
 };
-
 
 const deleteUser = async (req, res) => {
   const { id } = req.params;
@@ -133,7 +133,7 @@ const loginUser = async (req, res) => {
 
     // Generate tokens
     const accessToken = jwt.sign(
-      { id: user.id, email: user.email, role:user.role },
+      { id: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
@@ -163,5 +163,5 @@ module.exports = {
   getUsers,
   getUserByIDController,
   deleteUser,
-  loginUser
+  loginUser,
 };
