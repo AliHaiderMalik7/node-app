@@ -15,8 +15,8 @@ router.get("/", authMiddleware, authorizeRole("admin"), (req, res) => {
 });router.get("/:id", getUserByIDController);
 router.delete("/:id", authMiddleware,  deleteUser);
 router.post("/login", loginUser);
-
 router.get("/users/all", getUsers)
-// router.post("/image", upload.single("image"), addUser)
+
+
 
 module.exports = router;

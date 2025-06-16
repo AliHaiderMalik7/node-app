@@ -20,11 +20,25 @@ const initDB = async () => {
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`;
         const alterTableQuery = `ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'user'`;
-        const alterImageQuery = `ALTER TABLE users ADD COLUMN IF NOT EXISTS image VARCHAR(255)`
+        const alterImageQuery = `ALTER TABLE users ADD COLUMN IF NOT EXISTS image VARCHAR(255)`;
+
+
+        const createProfileTableQuery = `CREATE TABLE IF NOT EXISTS profiles (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+            bio TEXT,
+            address TEXT,
+            avatar VARCHAR(255),
+            phone VARCHAR(255),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            
+        )`;
 
         await pool.query(createTableQuery);
         await pool.query(alterTableQuery);
         await pool.query(alterImageQuery)
+        await pool.query(createProfileTableQuery);
+
 
         console.log('✅ Table "users" is ready and "role" column is present');
   } catch (err) {
