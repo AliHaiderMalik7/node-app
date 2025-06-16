@@ -14,7 +14,7 @@ const SALT_ROUNDS = 10; // You can increase this for more security
 const addUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
-    const image = req.file.filename || null;
+    const image = req.file ? req.file.filename : null;
     if (!name || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }

@@ -1,4 +1,4 @@
-const { createProfile } = require("../models/profileModel");
+const { createProfile, getProfileByUserID, getAllProfiles } = require("../models/profileModel");
 const { getUserByID } = require("../models/userModel");
 
 const createUserProfile = async (req,res) => {
@@ -42,6 +42,53 @@ const createUserProfile = async (req,res) => {
     }
 }
 
-module.exports = {
-    createUserProfile
+const getProfileController = async(req,res) => {
+    try {
+      const userID = req.user.id;
+      const profile = await getProfileByUserID(userID);
+
+      if (!profile) {
+        res.status(404).json({ message: "Profile not found!" });
+      }
+
+      res.status(200).json(profile);
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      res.status(500).json({ error: "Failed to fetch profile" });
+    }
 }
+
+const getAnyProfileController = async (req,res) => {
+    try{
+        const userId = req.params.user_id;
+        const profile = await getProfileByUserID(userId);
+        if (!profile) {
+          res.status(404).json({ message: "Profile not found!" });
+        }
+
+        res.status(200).json(profile);
+    }
+    catch(err){
+        console.error("Error fetching profile:", error);
+        res.status(500).json({ error: "Failed to fetch profile" });
+    }
+}
+
+const getAllProfilesController = async (req,res) => {
+    try{
+        const profiles = await getAllProfiles();
+        res.status(200).json(profiles);
+    }   
+    catch(err){
+        console.error("Error fetching profile:", err);
+        res.status(500).json({ error: "Failed to fetch profiles" });
+    } 
+}
+
+
+module.exports = {
+  createUserProfile,
+  getProfileController,
+  getAnyProfileController,
+  getAllProfilesController,
+};
