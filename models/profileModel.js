@@ -27,10 +27,17 @@ const updateProfile = async (userId, { bio, address, phone, avatar }) => {
     `UPDATE profiles 
      SET bio = $1, address = $2, phone = $3, avatar = COALESCE($4, avatar)
      WHERE user_id = $5 RETURNING *`,
-    [bio, address, phone, avatar, userId] // ✅ correct values passed separately
+    [bio, address, phone, avatar, userId]
   );
   return result.rows[0];
 };
+
+const deleteProfile = async(id) => {
+    const result = await pool.query(
+      `DELETE from profiles WHERE user_id = $1 RETURNING *`,[id]
+    );
+    return result.rows[0];
+}
 
 
 module.exports = {
@@ -38,5 +45,6 @@ module.exports = {
   getProfileByUserID,
   getAllProfiles,
   updateProfile,
+  deleteProfile
   
 };

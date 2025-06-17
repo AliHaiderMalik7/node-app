@@ -5,6 +5,7 @@ const {
   getAnyProfileController,
   getAllProfilesController,
   updateProfileController,
+  deleteProfileController,
 } = require("../controllers/profileController");
 const { authMiddleware, authorizeRole } = require("../middleware/authMiddleware");
 const upload = require("../middleware/upload");
@@ -38,5 +39,8 @@ router.get(
 
 //update current user profile
 router.get("/user/edit", authMiddleware, upload.single('avatar'),updateProfileController);
+
+//delete profile by admin
+router.delete("/:user_id", authMiddleware,authorizeRole("admin"), deleteProfileController)
 
 module.exports = router;

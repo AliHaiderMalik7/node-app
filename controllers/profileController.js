@@ -1,4 +1,4 @@
-const { createProfile, getProfileByUserID, getAllProfiles, updateProfile } = require("../models/profileModel");
+const { createProfile, getProfileByUserID, getAllProfiles, updateProfile, deleteProfile } = require("../models/profileModel");
 const { getUserByID } = require("../models/userModel");
 
 const createUserProfile = async (req,res) => {
@@ -110,6 +110,20 @@ const getAllProfilesController = async (req,res) => {
     } 
 }
 
+const deleteProfileController = async (req,res) => {
+    try{
+        const userId = req.params.user_id;
+        const response = await deleteProfile(userId);
+
+        res.status(200).json({ message: "Profile deleted successfully" , response});
+
+    }
+    catch(err){
+        console.error("Error deleting profile:", err);
+        res.status(500).json({ error: "Failed to delete profile" });
+    }
+}
+
 
 module.exports = {
   createUserProfile,
@@ -117,4 +131,5 @@ module.exports = {
   getAnyProfileController,
   getAllProfilesController,
   updateProfileController,
+  deleteProfileController,
 };
