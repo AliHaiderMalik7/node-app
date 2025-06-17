@@ -4,6 +4,7 @@ const {
   getProfileController,
   getAnyProfileController,
   getAllProfilesController,
+  updateProfileController,
 } = require("../controllers/profileController");
 const { authMiddleware, authorizeRole } = require("../middleware/authMiddleware");
 const upload = require("../middleware/upload");
@@ -34,5 +35,8 @@ router.get(
   authorizeRole("admin"),
   getAnyProfileController
 );
+
+//update current user profile
+router.get("/user/edit", authMiddleware, upload.single('avatar'),updateProfileController);
 
 module.exports = router;

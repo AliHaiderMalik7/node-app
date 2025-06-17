@@ -1,4 +1,4 @@
-const { createProfile, getProfileByUserID, getAllProfiles } = require("../models/profileModel");
+const { createProfile, getProfileByUserID, getAllProfiles, updateProfile } = require("../models/profileModel");
 const { getUserByID } = require("../models/userModel");
 
 const createUserProfile = async (req,res) => {
@@ -69,8 +69,33 @@ const getAnyProfileController = async (req,res) => {
         res.status(200).json(profile);
     }
     catch(err){
-        console.error("Error fetching profile:", error);
+        console.error("Error fetching profile:", err);
         res.status(500).json({ error: "Failed to fetch profile" });
+    }
+}
+
+const updateProfileController = async(req,res) => {
+    try{
+        const userID = req.user.id;
+        const { bio, address, phone } = req.body;
+        const avatar = req.file ? req.file.filename : null;
+
+        console.log(bio);
+        
+        const profile = await updateProfile(userID, {
+          bio,
+          address,
+          phone,
+          avatar,
+        });
+
+        console.log("profile updated", profile);
+
+        res.status(201).json(profile);
+    }
+    catch(err){
+        console.error("Error updating profile:", err);
+        res.status(500).json({ error: "Failed to update profile" });
     }
 }
 
@@ -91,4 +116,5 @@ module.exports = {
   getProfileController,
   getAnyProfileController,
   getAllProfilesController,
+  updateProfileController,
 };

@@ -22,8 +22,21 @@ const getAllProfiles = async () => {
   return result.rows;
 };
 
+const updateProfile = async (userId, { bio, address, phone, avatar }) => {
+  const result = await pool.query(
+    `UPDATE profiles 
+     SET bio = $1, address = $2, phone = $3, avatar = COALESCE($4, avatar)
+     WHERE user_id = $5 RETURNING *`,
+    [bio, address, phone, avatar, userId] // ✅ correct values passed separately
+  );
+  return result.rows[0];
+};
+
+
 module.exports = {
   createProfile,
   getProfileByUserID,
-  getAllProfiles,   
+  getAllProfiles,
+  updateProfile,
+  
 };
