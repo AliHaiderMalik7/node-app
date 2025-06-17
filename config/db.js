@@ -33,6 +33,15 @@ const initDB = async () => {
             
         )`;
 
+//     const createPostsTableQuery = `CREATE TABLE IF NOT EXISTS posts (
+//     id SERIAL PRIMARY KEY,
+//     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+//     title VARCHAR(255) NOT NULL,
+//     content TEXT NOT NULL,
+//     image VARCHAR(255),
+//     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+// );`;
+
     await pool.query(createTableQuery);
     await pool.query(alterTableQuery);
     await pool.query(alterImageQuery);

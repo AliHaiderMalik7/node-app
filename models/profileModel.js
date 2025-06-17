@@ -1,4 +1,4 @@
-const pool = require("../config/db");
+const pool = require("../config/db")
 
 const createProfile = async ({ user_id, bio, address, avatar, phone }) => {
   const query = `INSERT INTO profiles (user_id, bio, address, avatar, phone)
@@ -45,6 +45,5 @@ module.exports = {
   getProfileByUserID,
   getAllProfiles,
   updateProfile,
-  deleteProfile
-  
+  deleteProfile,
 };
