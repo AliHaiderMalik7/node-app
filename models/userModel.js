@@ -1,64 +1,93 @@
+const { PrismaClient } = require("../generated/prisma");
 const pool = require("../config/db");
+const prisma = new PrismaClient();
 
-const createUser = async ({ name, email, password,role='user',image}) => {
-  const query = `INSERT INTO users (name, email, password,role,image)
-    VALUES ($1, $2, $3, $4, $5)
-    RETURNING *;
-    `;
-
-  const values = [name, email, password,role,image];
-  const result = await pool.query(query, values);
-  return result.rows[0];
+const createUser = async ({ name, email, password, role = "user", image }) => {
+  return await prisma.users.create({
+    data: {
+      name,
+      email,
+      password,
+      role,
+      image,
+    },
+  });
 };
 
-const getAllUsers = async (limit, offset, search="",role="") => {
-  limit = parseInt(limit); 
-  offset = parseInt(offset); 
+const getAllUsers = async (limit, offset, search = "", role = "") => {
+  const users = await prisma.users.findMany({
+    where :{
+      AND : [
+        {
+          OR : [
+            {name : {contains: search, mode: "insensitive"}},
+            {email : {contains: search, mode: "insensitive"}}
+          ]
+        },
+        role ? { role : {contains: role, mode: "insensitive"}} : {}
+      ]
+    },
+    orderBy: {
+      id: "asc"
+    },
+    skip: offset,
+    take:limit,
+    select: {
+      id: true,
+      name:true,
+      email: true,
+      role: true
+    }
+  })
 
-  const result = await pool.query(
-    `SELECT id, name, email, role
-     FROM users
-     WHERE (name ILIKE $1 OR email ILIKE $1) AND role ILIKE $2
-     ORDER BY id ASC
-     LIMIT $3 OFFSET $4`,
-    [`%${search}%`, `%${role}%`, limit, offset]
-  );
-  return result.rows;
-};
+  return users
+}
 
 
 const getUserByID = async (id) => {
-  const result = await pool.query(`SELECT * FROM USERS WHERE ID = $1`,[id])
-  return result.rows[0]
+  const result = await prisma.users.findUnique({
+    where : {
+      id: parseInt(id)
+    }
+  })
+
+  return result;
 }
 
-const getUsersCount = async (search = "", role = "") => {
-  const result = await pool.query(
-    `SELECT COUNT(*) FROM users 
-     WHERE (name ILIKE $1 OR email ILIKE $1)
-       AND role ILIKE $2`,
-    [`%${search}%`, `%${role}%`]
-  );
-  return result.rows[0].count;
-};
 
+
+const getUsersCount = async (search = "", role = "") => {
+  const count = await prisma.users.count({
+    where: {
+      AND: [
+        {
+          OR: [
+            { name: { contains: search, mode: "insensitive" } },
+            { email: { contains: search, mode: "insensitive" } },
+          ],
+        },
+        role ? { role: { contains: role, mode: "insensitive" } } : {},
+      ],
+    },
+  });
+  return count;
+}
 
 
 
 const deleteUserByID = async (id) => {
-  const result = await pool.query(`DELETE FROM USERS WHERE ID = $1 RETURNING *`, [id]);
+  const result = await pool.query(
+    `DELETE FROM USERS WHERE ID = $1 RETURNING *`,
+    [id]
+  );
   return result.rows[0];
 };
 
 const getUserByEmail = async (email) => {
-    const result = await pool.query(`SELECT * FROM users WHERE email = $1`, [
-      email,
-    ]);
-    console.log("result returned",result);
-    
-    return result.rows[0]
-
-}
+  return await prisma.users.findFirst({
+    where: { email },
+  });
+};
 
 
 module.exports = {
