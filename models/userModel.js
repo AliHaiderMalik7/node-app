@@ -1,5 +1,4 @@
 const { PrismaClient } = require("../generated/prisma");
-const pool = require("../config/db");
 const prisma = new PrismaClient();
 
 const createUser = async ({ name, email, password, role = "user", image }) => {
@@ -76,11 +75,12 @@ const getUsersCount = async (search = "", role = "") => {
 
 
 const deleteUserByID = async (id) => {
-  const result = await pool.query(
-    `DELETE FROM USERS WHERE ID = $1 RETURNING *`,
-    [id]
-  );
-  return result.rows[0];
+ const deletedUser = await prisma.users.delete({
+  where: {
+    id: parseInt(id)
+  }
+ })
+ return deletedUser
 };
 
 const getUserByEmail = async (email) => {
