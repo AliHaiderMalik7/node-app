@@ -15,11 +15,11 @@ const createUserProfile = async (req,res) => {
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Check if profile already exists
-    //   const existingProfile = await getProfileByUserId(userId);
-    //   if (existingProfile) {
-    //     return res.status(400).json({ error: "Profile already exists" });
-    //   }
+      // // Check if profile already exists
+      // const existingProfile = await getProfileByUserId(userId);
+      // if (existingProfile) {
+      //   return res.status(400).json({ error: "Profile already exists" });
+      // }
 
     const profile = await createProfile({
       user_id: userID,
