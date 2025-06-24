@@ -1,7 +1,7 @@
 const express = require("express");
 const uploadS3 = require("../middleware/uploadS3");
 const { authMiddleware, authorizeRole } = require("../middleware/authMiddleware");
-const { createComment, getCommentsByPost } = require("../controllers/commentController");
+const { createComment, getCommentsByPost, updateComment } = require("../controllers/commentController");
 const router = express.Router();
 
 
@@ -14,5 +14,12 @@ router.get(
   getCommentsByPost
 );
 
+router.put(
+  "/edit/:id",
+  authMiddleware,
+  uploadS3.upload.single("image"),
+  updateComment
+);
+  
 
 module.exports = router;

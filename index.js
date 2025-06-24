@@ -15,6 +15,8 @@ const connectMongo = require("./config/mongodb");
 connectMongo();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use('/api/users', userRoutes); // Route for user APIs
 
 //route for profile apis
