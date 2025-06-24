@@ -33,6 +33,29 @@ const createComment = async (req,res) => {
     }
 }
 
-module.exports = {
-    createComment
+const getCommentsByPost = async (req,res) => {
+    try{
+        const post_id = req.params.id;
+        console.log("postid", post_id);
+        
+        
+        const post = await postModel.findById(post_id);
+        if (!post) {
+          return res.status(404).json({ message: "Post not found" });
+        }
+
+
+        const comments = await commentModel.find({post_id}).sort({created_at:-1});
+
+        res.status(200).json({post_id, comments})
+    }
+    catch(err){
+        console.error("Error getting comments:", err);
+        res.status(500).json({ message: "Failed to get comments" });
+    }
 }
+
+module.exports = {
+  createComment,
+  getCommentsByPost,
+};
