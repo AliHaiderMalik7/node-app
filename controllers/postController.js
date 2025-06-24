@@ -23,6 +23,24 @@ const createPost = async (req, res) => {
   }
 };
 
+const approvePost = async (req, res) => {
+  try {
+    const postID = req.params.id;
+    const updatedPost = await postModel.findByIdAndUpdate(postID, {
+      approved: true,
+    },{new:true});
+
+    if (!updatedPost) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    res.status(200).json({ message: "Post approved", post: updatedPost });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to approve post" });
+  }
+};
+
 module.exports = {
   createPost,
+  approvePost,
 };

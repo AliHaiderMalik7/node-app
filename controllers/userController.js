@@ -27,9 +27,7 @@ const addUser = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-    console.log("hashed password", hashedPassword);
-    console.log("role", role);
-
+  
     // If role is undefined, it won't be inserted — DB will apply default 'user'
     const user = await createUser({
       name,
@@ -49,7 +47,6 @@ const addUser = async (req, res) => {
 };
 
 const getUsers = async (req, res) => {
-  console.log("in get usres");
   const page = parseInt(req.query.page) || 1;
   const search = req.query.search || "";
   const limit = parseInt(req.query.limit) || 5;
@@ -60,9 +57,6 @@ const getUsers = async (req, res) => {
     const users = await getAllUsers(limit, offset, search, roleFilter);
     const totalUsers = await getUsersCount(search, roleFilter);
     const totalPages = Math.ceil(totalUsers / limit);
-    console.log("count received", totalUsers);
-
-    console.log("users are", users);
 
     res.status(200).json({
       currentPage: page,
@@ -71,8 +65,6 @@ const getUsers = async (req, res) => {
       data: users,
     });
   } catch (error) {
-    console.log("error", error);
-
     res.status(500).json({ error: "Internal Server Errorrrrr!" });
   }
 };
@@ -96,15 +88,12 @@ const deleteUser = async (req, res) => {
 
   try {
     const deletedUser = await deleteUserByID(id);
-    console.log("user received is ", deletedUser);
-
+  
     if (!deletedUser) {
       return res.status(404).json({ message: "User not found" });
     }
     res.status(200).json({ message: "User deleted", user: deletedUser });
   } catch (error) {
-    console.log("error in delete", error);
-
     res.status(500).json({ error: "Internal Server Error!" });
   }
 };
@@ -119,14 +108,11 @@ const loginUser = async (req, res) => {
     }
 
     const user = await getUserByEmail(email);
-    console.log("user received is ", user);
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    console.log("ismatch", isMatch);
-
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }

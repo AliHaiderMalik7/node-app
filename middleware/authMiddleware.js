@@ -4,7 +4,7 @@ const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "No token required" });
+    return res.status(401).json({ message: "Token is required!" });
   }
 
   const token = authHeader.split(" ")[1];
@@ -19,8 +19,6 @@ const authMiddleware = (req, res, next) => {
 
 const authorizeRole = (...allowedRoles) => {
   return(req,res,next) => {
-    console.log("re.user",req.user);
-    
     if(!req.user || !allowedRoles.includes(req.user.role)){
       return res.status(403).json({message:"Access denied: Insufficient Permission"})
     }
