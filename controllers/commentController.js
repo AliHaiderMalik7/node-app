@@ -1,3 +1,4 @@
+const sendEmail = require("../config/sendEmail");
 const { uploadToS3 } = require("../middleware/uploadS3");
 const commentModel = require("../models/mongo/commentModel");
 const postModel = require("../models/mongo/postModel");
@@ -8,6 +9,8 @@ const createComment = async (req, res) => {
     const user_id = req.user.id; // from auth middleware
 
     const image = req.file ? req.file.location : null; // S3 URL
+
+    
     let imageUrl = null;
     if (req.file) {
       imageUrl = await uploadToS3(req.file); // 🟢 Upload to S3
@@ -22,6 +25,15 @@ const createComment = async (req, res) => {
       user_id: req.user.id,
       content: description,
       image: imageUrl,
+    });
+
+    await sendEmail({
+      to: "alihaidermalik08@gmail.com",
+      subject: "New comment on your post",
+      text: `Hi Ali, you have a new comment on your post titled "${post.title}".`,
+      html: `<p>Hi <b>Ali</b>,</p>
+               <p>You have a new comment on your post: <i>${post.title}</i></p>
+               <p><a href="http://yourapp.com/posts/${post._id}">View Post</a></p>`,
     });
 
     res.status(201).json({ message: "Comment added", comment });
